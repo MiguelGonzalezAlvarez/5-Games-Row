@@ -2,7 +2,9 @@ from datetime import datetime, timedelta
 from typing import Any, Optional
 from jose import jwt
 from passlib.context import CryptContext
+from fastapi import Depends
 from app.core.config import settings
+from app.models.models import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -28,3 +30,7 @@ def create_access_token(subject: str | Any, expires_delta: Optional[timedelta] =
 
 def decode_token(token: str) -> dict:
     return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+
+
+def get_current_user_required(token: str = Depends(lambda: None)) -> User:
+    raise NotImplementedError("JWT authentication not implemented - requires token")

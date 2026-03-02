@@ -1,11 +1,12 @@
 .counter {
   background: var(--color-white);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-xl);
   padding: var(--space-2xl);
   text-align: center;
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--border-color);
 }
 
 .counter::before {
@@ -42,19 +43,20 @@
 .header h2 {
   color: var(--color-red);
   font-size: 1.5rem;
+  letter-spacing: 0.05em;
 }
 
 .scissors {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
 }
 
 .mainCounter {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
 .daysCircle {
-  width: 180px;
-  height: 180px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-red) 0%, var(--color-red-dark) 100%);
   display: flex;
@@ -63,31 +65,51 @@
   justify-content: center;
   margin: 0 auto;
   box-shadow: 
-    0 10px 30px rgba(218, 41, 28, 0.3),
-    inset 0 -5px 20px rgba(0, 0, 0, 0.2);
+    0 15px 40px rgba(218, 41, 28, 0.4),
+    inset 0 -8px 25px rgba(0, 0, 0, 0.25),
+    inset 0 8px 25px rgba(255, 255, 255, 0.15);
+  position: relative;
+}
+
+.daysCircle::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  width: 60px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: rotate(-30deg);
 }
 
 .daysNumber {
   font-family: var(--font-display);
-  font-size: 4rem;
+  font-size: 4.5rem;
   font-weight: 700;
   color: var(--color-white);
   line-height: 1;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .daysLabel {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.25em;
   margin-top: var(--space-xs);
+  font-weight: 600;
 }
 
 .message {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   color: var(--color-gray-500);
   margin-bottom: var(--space-xl);
   font-weight: 500;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  display: inline-block;
 }
 
 .progressSection {
@@ -97,28 +119,30 @@
 .progressHeader {
   display: flex;
   justify-content: space-between;
-  margin-bottom: var(--space-sm);
-  font-size: 0.875rem;
+  margin-bottom: var(--space-md);
+  font-size: 0.9rem;
   color: var(--color-gray-500);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   font-weight: 600;
 }
 
 .progressBar {
   background: var(--color-gray-200);
   border-radius: var(--radius-full);
-  height: 24px;
+  height: 28px;
   position: relative;
   overflow: visible;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .progressFill {
   height: 100%;
   background: linear-gradient(90deg, var(--color-red) 0%, var(--color-gold) 100%);
   border-radius: var(--radius-full);
-  transition: width 0.5s ease;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 0;
+  box-shadow: 0 2px 8px rgba(218, 41, 28, 0.4);
 }
 
 .progressMilestones {
@@ -128,80 +152,109 @@
   right: 0;
   display: flex;
   justify-content: space-between;
-  padding: var(--space-sm) 0;
+  padding: var(--space-md) 4px 0;
 }
 
 .milestone {
-  width: 28px;
-  height: 28px;
-  background: var(--color-gray-300);
+  width: 32px;
+  height: 32px;
+  background: var(--color-white);
+  border: 3px solid var(--color-gray-300);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: var(--color-gray-500);
+  color: var(--color-gray-400);
   margin-top: var(--space-sm);
-  transition: all var(--transition-fast);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
 }
 
 .milestone.active {
   background: var(--color-red);
+  border-color: var(--color-red);
   color: var(--color-white);
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(218, 41, 28, 0.4);
+}
+
+.milestone:hover {
   transform: scale(1.1);
 }
 
 .nextMatch {
-  background: var(--color-gray-100);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
   margin-top: var(--space-xl);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .nextMatch h4 {
   color: var(--color-gray-500);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: var(--space-sm);
+  letter-spacing: 0.12em;
+  margin-bottom: var(--space-md);
 }
 
 .nextMatch p {
   font-family: var(--font-display);
-  font-size: 1.25rem;
-  color: var(--color-black);
-  margin-bottom: var(--space-xs);
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
 }
 
 .nextMatch time {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: var(--color-gray-500);
+  font-weight: 500;
 }
 
 .celebration {
-  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-red) 100%);
-  border-radius: var(--radius-lg);
-  padding: var(--space-xl);
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-red) 50%, var(--color-gold) 100%);
+  background-size: 200% 200%;
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
   margin-top: var(--space-xl);
-  animation: pulse 2s ease-in-out infinite;
+  animation: celebrationPulse 2s ease-in-out infinite, shimmer 3s linear infinite;
+}
+
+@keyframes celebrationPulse {
+  0%, 100% {
+    box-shadow: 0 10px 40px rgba(251, 225, 34, 0.4);
+  }
+  50% {
+    box-shadow: 0 20px 60px rgba(251, 225, 34, 0.6);
+  }
 }
 
 .celebration h3 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: var(--color-white);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .celebration p {
   color: var(--color-white);
   font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .celebrationEmoji {
-  font-size: 3rem;
+  font-size: 4rem;
   display: block;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .skeleton {
@@ -217,20 +270,29 @@
 @media (max-width: 480px) {
   .counter {
     padding: var(--space-lg);
+    border-radius: var(--radius-xl);
   }
 
   .daysCircle {
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
   }
 
   .daysNumber {
-    font-size: 3rem;
+    font-size: 3.5rem;
   }
 
   .milestone {
-    width: 24px;
-    height: 24px;
-    font-size: 0.625rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+  }
+
+  .celebration {
+    padding: var(--space-xl);
+  }
+
+  .celebration h3 {
+    font-size: 2rem;
   }
 }

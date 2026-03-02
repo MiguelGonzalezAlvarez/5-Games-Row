@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
     # CORS
-    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:4321", "http://localhost:3000"]
+    BACKEND_CORS_ORIGINS: list[str] = ["*"]
     
     # Challenge dates
     HAIRCUT_CHALLENGE_START_DATE: str = "2024-10-05"
