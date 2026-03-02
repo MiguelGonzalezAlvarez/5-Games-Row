@@ -18,6 +18,19 @@
   --color-warning: #F59E0B;
   --color-error: #EF4444;
   
+  /* Background */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F5F5;
+  --bg-tertiary: #E5E5E5;
+  
+  /* Text */
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --text-muted: #666666;
+  
+  /* Border */
+  --border-color: #E5E5E5;
+  
   /* Spacing */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -48,6 +61,32 @@
   --transition-fast: 150ms ease;
   --transition-normal: 300ms ease;
   --transition-slow: 500ms ease;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --color-gray-100: #1A1A1A;
+  --color-gray-200: #2D2D2D;
+  --color-gray-300: #3D3D3D;
+  --color-gray-400: #4D4D4D;
+  --color-gray-500: #6D6D6D;
+  --color-gray-600: #9D9D9D;
+  
+  --bg-primary: #121212;
+  --bg-secondary: #1E1E1E;
+  --bg-tertiary: #2D2D2D;
+  
+  --text-primary: #FFFFFF;
+  --text-secondary: #E5E5E5;
+  --text-muted: #999999;
+  
+  --border-color: #2D2D2D;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+}
 }
 
 *,
@@ -161,6 +200,51 @@ input, textarea, select {
 .btn-secondary:hover {
   background: var(--color-gray-300);
 }
+
+/* Theme Toggle */
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--color-red);
+  color: var(--color-white);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  transition: all var(--transition-fast);
+  border: none;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Card Styles */
+.card {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Background helpers */
+.bg-primary { background: var(--bg-primary); }
+.bg-secondary { background: var(--bg-secondary); }
+.bg-tertiary { background: var(--bg-tertiary); }
+
+/* Text helpers */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+
+/* Border helpers */
+.border { border-color: var(--border-color); }
 
 /* Animations */
 @keyframes fadeIn {

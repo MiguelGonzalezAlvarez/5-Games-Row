@@ -8,67 +8,79 @@ A web application tracking Frank Ilett's (@TheUnitedStrand) viral haircut challe
 5-games-row/
 ├── backend/               # FastAPI Python backend
 │   ├── app/
-│   │   ├── api/           # API endpoints
-│   │   ├── core/          # Config, security, logging
-│   │   ├── db/            # Database setup
-│   │   ├── models/        # SQLAlchemy models
-│   │   ├── schemas/       # Pydantic schemas
-│   │   └── services/      # Business logic + caching
-│   └── tests/            # Unit tests
+│   │   ├── api/         # API endpoints, WebSockets, Notifications
+│   │   ├── core/        # Config, security, JWT, middleware
+│   │   ├── db/          # Database setup
+│   │   ├── models/      # SQLAlchemy models
+│   │   ├── schemas/     # Pydantic schemas
+│   │   └── services/    # Business logic + caching
+│   └── tests/          # Unit & integration tests
 │
-└── frontend/              # Astro + React frontend
+└── frontend/            # Astro + React + TypeScript
     ├── src/
-    │   ├── components/    # React components
-    │   ├── pages/        # Astro pages
-    │   ├── stores/       # Zustand state
-    │   ├── styles/       # Global CSS
-    │   ├── utils/        # Helpers, constants, API
-    │   └── __tests__/    # Component tests
-    └── public/           # Static assets + PWA
+    │   ├── components/  # React components
+    │   ├── pages/      # Astro pages
+    │   ├── stores/     # Zustand state
+    │   ├── styles/    # CSS + Dark mode
+    │   ├── utils/     # API, WebSocket, Supabase, helpers
+    │   └── __tests__/ # Tests
+    └── public/        # Static assets + PWA
 ```
 
 ## 🛠 Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | Astro 4.x + React 18 |
+| Frontend | Astro 4.x + React 18 + TypeScript |
 | Backend | FastAPI (Python 3.11) |
-| Database | SQLite (dev) / PostgreSQL (prod) |
+| Database | SQLite (dev) / PostgreSQL (prod) / Supabase (optional) |
 | API Data | football-data.org (free tier) |
-| Styling | CSS Modules |
+| Styling | CSS Modules + Dark/Light Theme |
 | State | Zustand |
+| Auth | JWT + Supabase Auth (optional) |
 | Caching | In-memory cache with TTL |
 | Animations | Framer Motion |
-| Testing | pytest (backend), Vitest (frontend) |
-| DevOps | Docker, GitHub Actions |
+| Real-time | WebSockets |
+| Push | Web Push Notifications |
+| Testing | pytest + Vitest |
+| DevOps | Docker, GitHub Actions, nginx |
 
 ## ✨ Features
 
-1. **Haircut Counter** - Real-time tracking of days since challenge started (Oct 5, 2024)
-2. **Streak Tracker** - Shows Manchester United's current winning streak
-3. **League Table** - Live Premier League standings with MUFC highlighted
-4. **Match History** - Recent Manchester United results
-5. **Haircut Simulator** - Visual simulation of hair growth over time
-6. **Match Predictor** - Predict match scores and track accuracy
-7. **Historical Stats** - Analysis of United's winning streaks
-8. **Community Feed** - Share photos and support the challenge
-9. **Smart Caching** - In-memory cache to reduce API calls
-10. **Animations** - Smooth framer-motion animations
-11. **PWA Ready** - Installable as a native app with offline support
-12. **Docker Support** - Containerized deployment
-13. **CI/CD** - Automated testing and deployment
-14. **Unit Tests** - Comprehensive test coverage
+### Core
+- **Haircut Counter** - Real-time tracking of days since challenge started (Oct 5, 2024)
+- **Streak Tracker** - Shows Manchester United's current winning streak
+- **League Table** - Live Premier League standings with MUFC highlighted
+- **Match History** - Recent Manchester United results
+- **Haircut Simulator** - Visual simulation of hair growth over time
+- **Match Predictor** - Predict match scores and track accuracy
+- **Historical Stats** - Analysis of United's winning streaks
+- **Community Feed** - Share photos and support the challenge
+
+### Technical
+- **Smart Caching** - In-memory cache to reduce API calls
+- **Rate Limiting** - 60 requests/minute per IP
+- **Request Logging** - Complete request/response logging
+- **Error Handling** - Centralized error handling middleware
+- **JWT Authentication** - Secure user authentication
+- **WebSockets** - Real-time updates for matches, standings, challenges
+- **Push Notifications** - Web Push API support
+- **Dark/Light Theme** - System-aware theme switching
+- **PWA** - Installable as a native app with offline support
+- **Docker** - Containerized deployment
+- **CI/CD** - Automated testing and deployment
+- **Tests** - Comprehensive test coverage
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.11+
-- Node.js 18+
-- Docker & Docker Compose (optional)
+- Python 3 Node.js 18.11+
+-+
+- Docker & Docker Compose
 - API key from [football-data.org](https://football-data.org)
 
-### Option 1: Docker Compose (Recommended)
+### Docker Compose (Recommended)
 
 ```bash
 # Clone the repository
@@ -82,155 +94,94 @@ cp backend/.env.example backend/.env
 docker-compose up --build
 ```
 
-The app will be available at:
+Access at:
 - Frontend: http://localhost:4321
 - Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
 
-### Option 2: Manual Setup
-
-#### Backend
+### Manual Setup
 
 ```bash
+# Backend
 cd backend
-
-# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
+source venv/bin/activate
 pip install -r requirements.txt
-
-# Install test dependencies
-pip install pytest pytest-asyncio
-
-# Copy environment variables
 cp .env.example .env
-# Edit .env and add your FOOTBALL_API_KEY
-
-# Run the server
 uvicorn main:app --reload
 
-# Run tests
-pytest tests/
-```
-
-#### Frontend
-
-```bash
+# Frontend
 cd frontend
-
-# Install dependencies
 npm install
-
-# Install test dependencies
-npm install --save-dev vitest @testing-library/react @testing-library/user-event jsdom
-
-# Run development server
 npm run dev
-
-# Run tests
-npm test
-
-# Run tests with coverage
-npm run test:coverage
-
-# Run linter
-npm run lint
 ```
 
 ## 📡 API Endpoints
 
 ### Football
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/football/standings` | Premier League standings |
-| GET | `/api/v1/football/matches` | All matches |
-| GET | `/api/v1/football/matches/manchester-united` | MUFC matches |
-| GET | `/api/v1/football/challenge/status` | Challenge status |
-| GET | `/api/v1/football/streak/current` | Current winning streak |
-| GET | `/api/v1/football/streak/history` | Historical streaks |
+- `GET /api/v1/football/standings` - Premier League standings
+- `GET /api/v1/football/matches` - All matches
+- `GET /api/v1/football/matches/manchester-united` - MUFC matches
+- `GET /api/v1/football/challenge/status` - Challenge status
+- `GET /api/v1/football/streak/current` - Current streak
+- `GET /api/v1/football/streak/history` - Historical streaks
 
 ### Community
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/community/posts` | Get all posts |
-| POST | `/api/v1/community/posts` | Create a post |
-| POST | `/api/v1/community/posts/{id}/like` | Like a post |
-| POST | `/api/v1/community/posts/{id}/comments` | Add comment |
+- `GET /api/v1/community/posts` - Get posts
+- `POST /api/v1/community/posts` - Create post (auth)
+- `POST /api/v1/community/posts/{id}/like` - Like (auth)
+- `POST /api/v1/community/posts/{id}/comments` - Comment (auth)
+- `GET /api/v1/community/predictions/stats` - Prediction stats
 
 ### Auth
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/community/auth/register` | Register user |
-| POST | `/api/v1/community/auth/login` | Login user |
+- `POST /api/v1/community/auth/register` - Register
+- `POST /api/v1/community/auth/login` - Login
+- `GET /api/v1/community/auth/me` - Get current user
 
-## 🐳 Docker Commands
+### WebSockets
+- `/api/v1/ws/ws/{channel}` - Real-time updates
+- Channels: `match_updates`, `challenge_updates`, `standings_updates`
+
+### Notifications
+- `POST /api/v1/notifications/subscribe` - Subscribe to push
+- `POST /api/v1/notifications/notify` - Broadcast notification
+
+## 🧪 Testing
 
 ```bash
-# Build and start
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop
-docker-compose down
-
-# Rebuild
-docker-compose build --no-cache
-```
-
-## 🧪 Running Tests
-
-### Backend Tests
-```bash
+# Backend
 cd backend
-pytest tests/ -v
-pytest tests/ --cov=app
-```
+pytest tests/ -v --cov=app
 
-### Frontend Tests
-```bash
+# Frontend
 cd frontend
 npm test
 npm run test:coverage
 ```
 
-## 📁 Project Structure
+## 📁 Environment Variables
 
-```
-5-games-row/
-├── .github/workflows/     # CI/CD pipelines
-├── backend/
-│   ├── app/
-│   │   ├── api/v1/       # API routes
-│   │   ├── core/         # Config, security
-│   │   ├── db/           # Database
-│   │   ├── models/       # SQLAlchemy
-│   │   ├── schemas/      # Pydantic
-│   │   └── services/     # Business logic
-│   ├── tests/            # Unit tests
-│   ├── Dockerfile
-│   └── requirements.txt
-├── frontend/
-│   ├── public/           # Static assets + PWA
-│   ├── src/
-│   │   ├── components/  # React components
-│   │   ├── pages/       # Astro pages
-│   │   ├── styles/      # CSS
-│   │   ├── utils/       # Helpers, API, constants
-│   │   └── __tests__/  # Tests
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   ├── vitest.config.ts
-│   └── package.json
-├── docker-compose.yml
-└── README.md
+See `backend/.env.example` and `frontend/.env.example` for all configuration options.
+
+## 🐳 Docker Commands
+
+```bash
+# Development
+docker-compose up -d
+
+# Production
+docker-compose -f docker-compose.prod.yml up -d
+
+# View logs
+docker-compose logs -f
+
+# Rebuild
+docker-compose build --no-cache
 ```
 
 ## 📝 License
 
-MIT License - Feel free to use this for learning or personal projects!
+MIT License
 
 ## ⚠️ Disclaimer
 

@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+from typing import Optional
 from app.db.database import get_db
 from app.models.models import User, Post, Comment, Like, Prediction
 from app.schemas.schemas import (
@@ -20,22 +22,40 @@ from datetime import timedelta
 from app.core.config import settings
 
 router = APIRouter()
+security = HTTPBearer(auto_error=False)
 
 
-def get_current_user_id(token: str) -> int:
-    """Decode token and return user_id"""
+async def get_current_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
+    db: Session = Depends(get_db)
+) -> Optional[User]:
+    if not credentials:
+        return None
+    
     try:
-        payload = decode_token(token)
-        return payload.get("sub")
+        payload = decode_token(credentials.credentials)
+        user_id = payload.get("sub")
+        if user_id is None:
+            return None
     except Exception:
+        return None
+
+    user = db.query(User).filter(User.id == user_id).first()
+    return user
+
+
+async def get_current_user_required(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail="Authentication required",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    return current_user
 
 
-# Auth endpoints
 @router.post("/auth/register", response_model=UserResponse)
 async def register(user: UserCreate, db: Session = Depends(get_db)):
     """Register a new user"""
@@ -82,6 +102,23 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
+@router.get("/auth/me", response_model=UserResponse)
+async def get_me(current_user: User = Depends(get_current_user)):
+    """Get current user info"""
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+        )
+    return current_user
+
+
+@router.post("/auth/logout")
+async def logout(current_user: User = Depends(get_current_user_required)):
+    """Logout user (client should discard token)"""
+    return {"message": "Successfully logged out"}
+
+
 # Posts endpoints
 @router.get("/posts", response_model=list[PostResponse])
 async def get_posts(
@@ -98,11 +135,11 @@ async def get_posts(
 async def create_post(
     post: PostCreate,
     db: Session = Depends(get_db),
-    user_id: int = 1,  # Default user for demo
+    current_user: User = Depends(get_current_user_required),
 ):
     """Create a new post"""
     new_post = Post(
-        user_id=user_id,
+        user_id=current_user.id,
         image_url=post.image_url,
         caption=post.caption,
     )
@@ -128,7 +165,7 @@ async def get_post(post_id: int, db: Session = Depends(get_db)):
 async def like_post(
     post_id: int,
     db: Session = Depends(get_db),
-    user_id: int = 1,
+    current_user: User = Depends(get_current_user_required),
 ):
     """Like a post"""
     post = db.query(Post).filter(Post.id == post_id).first()
@@ -140,14 +177,14 @@ async def like_post(
 
     existing_like = db.query(Like).filter(
         Like.post_id == post_id,
-        Like.user_id == user_id,
+        Like.user_id == current_user.id,
     ).first()
 
     if existing_like:
         db.delete(existing_like)
         post.likes_count = max(0, post.likes_count - 1)
     else:
-        new_like = Like(post_id=post_id, user_id=user_id)
+        new_like = Like(post_id=post_id, user_id=current_user.id)
         db.add(new_like)
         post.likes_count += 1
 
@@ -161,7 +198,7 @@ async def create_comment(
     post_id: int,
     comment: CommentCreate,
     db: Session = Depends(get_db),
-    user_id: int = 1,
+    current_user: User = Depends(get_current_user_required),
 ):
     """Create a comment on a post"""
     post = db.query(Post).filter(Post.id == post_id).first()
@@ -173,7 +210,7 @@ async def create_comment(
 
     new_comment = Comment(
         post_id=post_id,
-        user_id=user_id,
+        user_id=current_user.id,
         content=comment.content,
     )
     db.add(new_comment)
@@ -199,11 +236,11 @@ async def get_predictions(
 async def create_prediction(
     prediction: PredictionCreate,
     db: Session = Depends(get_db),
-    user_id: int = 1,
+    current_user: User = Depends(get_current_user_required),
 ):
     """Create a prediction"""
     new_prediction = Prediction(
-        user_id=user_id,
+        user_id=current_user.id,
         match_id=prediction.match_id,
         home_team=prediction.home_team,
         away_team=prediction.away_team,
@@ -214,3 +251,37 @@ async def create_prediction(
     db.commit()
     db.refresh(new_prediction)
     return new_prediction
+
+
+@router.get("/predictions/stats")
+async def get_prediction_stats(
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user),
+):
+    """Get prediction statistics"""
+    total_predictions = db.query(Prediction).count()
+    predictions_with_result = db.query(Prediction).filter(
+        Prediction.actual_home_goals.isnot(None)
+    ).count()
+    
+    user_stats = None
+    if current_user:
+        user_predictions = db.query(Prediction).filter(
+            Prediction.user_id == current_user.id
+        ).all()
+        
+        correct = sum(1 for p in user_predictions if p.is_correct)
+        total_points = sum(p.points_earned for p in user_predictions)
+        
+        user_stats = {
+            "total": len(user_predictions),
+            "correct": correct,
+            "accuracy": round(correct / len(user_predictions) * 100, 1) if user_predictions else 0,
+            "total_points": total_points,
+        }
+    
+    return {
+        "total_predictions": total_predictions,
+        "predictions_with_result": predictions_with_result,
+        "user_stats": user_stats,
+    }

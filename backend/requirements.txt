@@ -13,3 +13,9 @@ passlib[bcrypt]==1.7.4
 python-multipart==0.0.6
 pytest==7.4.4
 pytest-asyncio==0.23.3
+pytest-cov==4.1.0
+python-socketio[asyncio]==5.11.1
+aioredis==2.0.1
+websockets==12.0
+python-socketio[asyncio]==5.11.1
+fastapi-utils
