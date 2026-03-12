@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 
 export default defineConfig({
+  base: '/5-Games-Row',
   integrations: [react()],
   output: 'static',
   prefetch: {
