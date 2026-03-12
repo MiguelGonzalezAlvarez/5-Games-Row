@@ -183,6 +183,54 @@ docker-compose build --no-cache
 
 MIT License
 
+## 🚀 Deployment
+
+### Frontend - GitHub Pages (Solo modo demo)
+
+El frontend está configurado para desplegarse en GitHub Pages usando la rama `gh-pages`:
+
+```bash
+cd frontend
+npm install
+npm run build
+npm run deploy
+```
+
+**URL**: https://miguelgonzalezalvarez.github.io/5-Games-Row
+
+> **Nota**: El modo demo funciona sin backend. Para conectar el backend, ver más abajo.
+
+### Backend - Railway (Opcional)
+
+Para desplegar el backend en Railway:
+
+1. Crea un proyecto en [Railway](https://railway.app)
+2. Conecta tu repositorio GitHub
+3. Selecciona la carpeta `backend`
+4. Añade las variables de entorno necesarias (ver `backend/.env.example`)
+5. Una vez desplegado, copia la URL (ej: `https://tu-proyecto.up.railway.app`)
+
+#### Configurar frontend con backend:
+
+Edita `frontend/.env`:
+```bash
+PUBLIC_API_URL=https://tu-proyecto.up.railway.app/api/v1
+```
+
+Luego redeploya el frontend:
+```bash
+cd frontend
+npm run build
+npm run deploy
+```
+
+### Procfile (Railway)
+
+El archivo `backend/Procfile` está preparado para Railway:
+```
+web: uvicorn main:app --host 0.0.0.0 --port $PORT
+```
+
 ## ⚠️ Disclaimer
 
 This project is not affiliated with Manchester United FC, football-data.org, or Frank Ilett. It's a fan project created for educational purposes.
